@@ -1,8 +1,10 @@
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     Updater,
     CommandHandler,
     MessageHandler,
-    Filters
+    Filters,
+    CallbackQueryHandler
 )
 
 numQuestions = 3
@@ -96,6 +98,52 @@ def infoHandler(update, context):
         userState[chat_id] = -1
         update.message.reply_text("uhhh we resetting ur status sorry\npls type /start")
 
+
+def options(update, context):
+    button_list = [
+        InlineKeyboardButton("Yes", callback_data="Yes"),
+        InlineKeyboardButton("No", callback_data="No")
+    ]
+    # for each in ["yes", "no"]:
+    #     button_list.append(InlineKeyboardButton(each, callback_data=each))
+    reply_markup = InlineKeyboardMarkup([button_list])
+    context.bot.send_message(chat_id=update.message.chat_id,
+                             text="Are you sure you want to start a new report? This will erase all data from the ongoing report.",
+                             reply_markup=reply_markup)
+    
+# def build_menu(buttons, n_cols=2, header_buttons=None, footer_buttons=None):
+#     """
+#     Returns a list of inline buttons used to generate inlinekeyboard responses
+    
+#     :param buttons: `List` of InlineKeyboardButton
+#     :param n_cols: Number of columns (number of list of buttons)
+#     :param header_buttons: First button value
+#     :param footer_buttons: Last button value
+#     :return: `List` of inline buttons
+#     """
+#     menu = [buttons]
+#     # menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), 2)]
+#     # if header_buttons:
+#     #     menu.insert(0, header_buttons)
+#     # if footer_buttons:
+#     #     menu.append(footer_buttons)
+#     return menu
+
+def query_yes(update, context):
+    # TODO: start the new report
+    update.callback_query.edit_message_reply_markup(None)
+    context.bot.send_message(chat_id=update.effective_chat.id, 
+                             text='[query_yes] callback data: ' + update.callback_query.data)
+
+def query_no(update, context):
+    # TODO: say continuing on with the report, repeat prev question
+    update.callback_query.edit_message_reply_markup(None)
+    context.bot.send_message(chat_id=update.effective_chat.id, 
+                             text='[query_no] callback data: ' + update.callback_query.data)
+
+
+
+
 def main():
     # Get bot's token
     token = ""
@@ -112,6 +160,11 @@ def main():
     # Handler for commands
     dp.add_handler(CommandHandler("start", startHandler))
     dp.add_handler(CommandHandler("help", helpHandler))
+
+    dp.add_handler(CommandHandler('options', options))
+    dp.add_handler(CallbackQueryHandler(query_yes, pattern='^Yes$'))
+    dp.add_handler(CallbackQueryHandler(query_no,  pattern='^No$'))
+
 
     # Handler for messages (non-commands)
     dp.add_handler(MessageHandler(Filters.text, infoHandler))

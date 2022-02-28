@@ -7,20 +7,51 @@ from telegram.ext import (
     CallbackQueryHandler
 )
 
-numQuestions = 3
+# TODO: update if number of questions depends on report type
+numQuestions = 18
 
 repliesReport1 = {
-    1: "taking your info... first question: (type any ans pls)",
-    2: "u r 1, moving on to q2: (type any ans pls)",
-    3: "u r 2, moving on to q3: (type any ans pls)",
-    4: "u r 3, and r done"
+    1: "Rank + Full Name:",
+    2: "Date:",
+    3: "Symptom:",
+    4: "Location and Time:",
+    5: "Last ART:",
+    6: "RSN Protocol 3 date:", # to update if needed
+    7: "Date of Close Contact:", # to update if needed
+    8: "Date of Booster:",
+    9: "NRIC:",
+    10: "Service Status:",
+    11: "Sex/Age:",
+    12: "VOC:",
+    13: "DOB:",
+    14: "ORD:",
+    15: "Last Location:",
+    16: "Date at Last Location:",
+    17: "Number of Close Contacts:", # add in if anticipate ops impact?
+    18: "Recovery Buddy:",
+    19: "Report being generated..."
 }
 
 repliesReport2 = {
-    1: "taking your info... first question: (type any ans pls)",
-    2: "u r 1, moving on to q2: (type any ans pls)",
-    3: "u r 2, moving on to q3: (type any ans pls)",
-    4: "u r 3, and r done"
+    1: "Q1",
+    2: "Q2",
+    3: "Q3",
+    4: "Q4",
+    5: "Q5",
+    6: "Q6",
+    7: "Q7",
+    8: "Q8",
+    9: "Q9",
+    10: "Q10",
+    11: "Q11",
+    12: "Q12",
+    13: "Q13",
+    14: "Q14",
+    15: "Q15",
+    16: "Q16",
+    17: "Q17",
+    18: "Q18",
+    19: "Report being generated..."
 }
 
 replies = {
@@ -36,9 +67,41 @@ userState = {}
 # [0] contains report type, [i] contains info for question i
 userReplies = {}
 
+# TODO: if/else based on answers I guess
 def createReport1(chat_id):
-    yourInfo = "Q1: " + userReplies[chat_id][1] + "\nQ2: " + userReplies[chat_id][2] + "\nQ3: " + userReplies[chat_id][3]
-    return "report1\n" + yourInfo
+    report = "Dear CNMO Sir,\n\nINCIDENT REPORT/NMS/"
+    report += userReplies[chat_id][1] + "/Symptomatic Ag+ (P2PC)\n\n"
+    report += "Background\n1. On "
+    report += userReplies[chat_id][2] + ", " + userReplies[chat_id][1] + " developed " + userReplies[chat_id][3] + ". "
+    report += userReplies[chat_id][1] + " reported sick at " + userReplies[chat_id][4] + " and was administered a PA-ART which returned positive. His last RRT-ART on "
+    report += userReplies[chat_id][5] + " was negative.\n\n"
+    # to update if needed
+    report += "2. " + userReplies[chat_id][1] + " has been on RSN Protocol 3 since " + userReplies[chat_id][6]
+    report += " as a result of close contact (HH member) to his brother that was placed on P2PC on " + userReplies[chat_id][7] + ".\n\n"
+    #
+    report += "3. " + userReplies[chat_id][1] + " is currently stable. He has completed his primary COVId-19 vaccination series, with a booster dose on " + userReplies[chat_id][8] + ".\n\n"
+    report += "4. None of his family have any travel history, and none reported contact with any local clusters beyond their household.\n"
+    report += "PARTICULARS OF SERVICE PERSON:\n"
+    report += "NRIC: " + userReplies[chat_id][9] + "\n"
+    report += "RANK/NAME: " + userReplies[chat_id][1] + "\n"
+    report += "SERVICE STATUS: " + userReplies[chat_id][10] + "\n"
+    report += "SEX/AGE: " + userReplies[chat_id][11] + "\n"
+    report += "VOC: " + userReplies[chat_id][12] + "\n"
+    report += "DOB: " + userReplies[chat_id][13] + "\n"
+    report += "ORD: " + userReplies[chat_id][14] + "\n\n"
+    report += "CLASSIFICATION AND ASSESSMENT:\n"
+    report += "5. Given that " + userReplies[chat_id][1] + " is symptomatic with a positive PA-ART, he will be managed as per MOH Protocol 2 (Primary Care). No confirmatory PCR is required. Serviceman will self-isolate for 72 hours. After 72 hours, he will (a) conduct daily ART and continue to isolate until he tests negative OR (b) time-based discharge on D7 of illness. "
+    report += userReplies[chat_id][1] + " will only return to work after he and all his household members have exited isolation.\n\n"
+    report += "CONTACT MAPPING\n"
+    report += "6. " + userReplies[chat_id][1] + " was last in " + userReplies[chat_id][15] + " on " + userReplies[chat_id][16] + ", there are "
+    report += userReplies[chat_id][17] + " RSN close contact(s) based on S-2.\n\n"
+    report += "OPS IMPACT\n"
+    report += "7. There is anticipated ops impact to NMOC operations. NMOC will make the necessary adjustments to accomodate for the ops needs.\n\n"
+    report += "8. NMS will maintain close contact and provide support to the serviceman. "
+    report += userReplies[chat_id][18] + " has preliminary been appointed as the Recovery Buddy.\n\n"
+    report += "9. Submitted for info, please."
+
+    return report
 
 def createReport2(chat_id):
     yourInfo = "Q1: " + userReplies[chat_id][1] + "\nQ2: " + userReplies[chat_id][2] + "\nQ3: " + userReplies[chat_id][3]

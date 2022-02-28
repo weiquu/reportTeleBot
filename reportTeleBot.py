@@ -64,14 +64,18 @@ def startHandler(update, context):
 def helpHandler(update, context):
     update.message.reply_text("to start a new report, use /start\n to restart midway through, use /start as well!!\n reviewing and changing answers gimme a while")
 
+# TODO: command to show types of reports and descriptions
+
 def collectInfo(chat_id, i, ans):
     userReplies[chat_id][i] = ans
     userState[chat_id] += 1
 
 def collectReportType(chat_id, ans):
-    # TODO: checking
+    if ans not in reportDispatcher:
+        return False
     userReplies[chat_id][0] = ans 
     userState[chat_id] += 1  
+    return True
 
 def infoHandler(update, context):
     chat_id = update.message.chat_id
@@ -80,9 +84,12 @@ def infoHandler(update, context):
         update.message.reply_text("pls start a new session with /start to generate a report")
         
     elif (userState[chat_id] == 0): # answer is the report type, ready to ask first question
-        collectReportType(chat_id, update.message.text)
-        userReplies[chat_id][0] = update.message.text 
-        update.message.reply_text(replies[userReplies[chat_id][0]][userState[chat_id]])
+        success = collectReportType(chat_id, update.message.text)
+        if (success):
+            update.message.reply_text(replies[userReplies[chat_id][0]][userState[chat_id]])
+        else:
+            update.message.reply_text("Report type invalid.")
+            update.message.reply_text("what report type: ")
 
     elif (userState[chat_id] >= 1 and userState[chat_id] < numQuestions): # report is in progress
         collectInfo(chat_id, userState[chat_id], update.message.text)
